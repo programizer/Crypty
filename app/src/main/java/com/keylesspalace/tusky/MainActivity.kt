@@ -15,6 +15,7 @@
 
 package com.keylesspalace.tusky
 
+import com.google.android.material.R as materialR
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationManager
@@ -58,7 +59,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.FixedSizeDrawable
 import com.bumptech.glide.request.transition.Transition
-import com.google.android.material.R as materialR
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -144,9 +144,15 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.migration.OptionalInject
 import de.c1710.filemojicompat_ui.helpers.EMOJI_PREFERENCE
 import javax.inject.Inject
+import kotlin.text.Charsets.UTF_8
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.pgpainless.sop.SOPImpl
+import sop.ByteArrayAndResult
+import sop.DecryptionResult
+import sop.SOP
+
 
 @OptionalInject
 @AndroidEntryPoint
@@ -201,6 +207,41 @@ class MainActivity : BottomSheetActivity(), ActionButtonActivity, MenuProvider {
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sop: SOP = SOPImpl()
+
+        // Generate an OpenPGP key
+        val key = sop.generateKey()
+            .userId("Alice <alice@example.org>")
+            .generate()
+            .bytes
+
+        // Extract the certificate (public key)
+        val cert = sop.extractCert()
+            .key(key)
+            .bytes
+
+        // Encrypt a message
+        val charset = UTF_8
+        val message: ByteArray = "test message written by me - programizer".toByteArray(charset)
+        val encrypted: ByteArray = sop.encrypt()
+            .withCert(cert)
+            .signWith(key)
+            .plaintext(message)
+            .getBytes()
+
+        Log.i("original message: ", message.toString(charset))
+        Log.i("encrypted message: ",encrypted.toString(charset))
+
+        // Decrypt a message
+        val messageAndVerifications: ByteArrayAndResult<DecryptionResult> = sop.decrypt()
+            .withKey(key)
+            .ciphertext(encrypted)
+            .toByteArrayAndResult()
+        val decrypted = messageAndVerifications.bytes
+        Log.i("decrypted message: ",decrypted.toString(charset))
+
+        // END example
+
         // Newer Android versions don't need to install the compat Splash Screen
         // and it can cause theming bugs.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
