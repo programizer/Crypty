@@ -15,7 +15,9 @@
 
 package com.keylesspalace.tusky.components.compose
 
+import com.google.android.material.R as materialR
 import android.Manifest
+import android.R.id
 import android.app.ProgressDialog
 import android.content.ClipData
 import android.content.Context
@@ -36,9 +38,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.PopupMenu
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -62,7 +66,6 @@ import androidx.transition.TransitionManager
 import com.canhub.cropper.CropImage
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.options
-import com.google.android.material.R as materialR
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.color.MaterialColors
@@ -120,11 +123,17 @@ import java.text.DecimalFormat
 import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.text.Charsets.UTF_8
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.pgpainless.sop.SOPImpl
+import sop.ByteArrayAndResult
+import sop.DecryptionResult
+import sop.SOP
+
 
 @OptionalInject
 @AndroidEntryPoint
@@ -252,6 +261,68 @@ class ComposeActivity :
 
         activeAccount = accountManager.activeAccount ?: return
 
+
+        // Begin OpenPGP section (initialize)
+        val current_identity = activeAccount.fullName
+        Log.i("current_identity", current_identity)
+        val sop: SOP = SOPImpl()
+        val charset = UTF_8
+
+        // If it doesn't already exist for this identity, generate an OpenPGP key and store it.
+        // Otherwise, make sure the key from the file is used for encryption.
+        val filename = "priv_key_"+current_identity
+        val file = File(applicationContext.filesDir, filename)
+        var key : ByteArray
+        if (!file.exists()) {
+            key = sop.generateKey()
+                .userId(current_identity)
+                .generate()
+                .bytes
+            val fileContents = key.toString(charset)
+            applicationContext.openFileOutput(filename, MODE_PRIVATE).use {
+                it.write(fileContents.toByteArray())
+            }
+        }
+        else {
+            key = "".toByteArray()
+            applicationContext.openFileInput(filename).bufferedReader().forEachLine {
+                key+=(it+"\n").toByteArray()
+            }
+        }
+
+
+        //Test that the key works
+        // Extract the certificate (public key)
+        val cert = sop.extractCert()
+            .key(key)
+            .bytes
+
+        // Encrypt a message
+        val message: ByteArray = "test message written by me - programizer".toByteArray(charset)
+        val encrypted: ByteArray = sop.encrypt()
+            .withCert(cert)
+            .plaintext(message)
+            .getBytes()
+
+        Log.i("original message: ", message.toString(charset))
+        Log.i("encrypted message: ",encrypted.toString(charset))
+
+        // Decrypt a message
+        val messageAndVerifications: ByteArrayAndResult<DecryptionResult> = sop.decrypt()
+            .withKey(key)
+            .ciphertext(encrypted)
+            .toByteArrayAndResult()
+        val decrypted = messageAndVerifications.bytes
+        Log.i("decrypted message: ",decrypted.toString(charset))
+        if (message.toString(charset)!=decrypted.toString(charset))
+            Log.e("encryption test", "fail")
+        else
+            Log.i("encryption test", "pass")
+        // End test
+
+        // End OpenPGP section
+
+
         val theme = preferences.getString(APP_THEME, AppTheme.DEFAULT.value)
         if (theme == "black") {
             setTheme(R.style.TuskyDialogActivityBlackTheme)
@@ -302,6 +373,7 @@ class ComposeActivity :
             binding.composeUsernameView.hide()
         }
 
+
         setupReplyViews(composeOptions?.replyingStatusAuthor, composeOptions?.replyingStatusContent)
         val statusContent = composeOptions?.content
         if (!statusContent.isNullOrEmpty()) {
@@ -313,7 +385,16 @@ class ComposeActivity :
         }
 
         setupLanguageSpinner(getInitialLanguages(composeOptions?.language, activeAccount))
-        setupComposeField(preferences, viewModel.startingText)
+        setupComposeField(preferences, buildString {
+            if (viewModel.startingText != null) {
+                append(viewModel.startingText)
+                append("\n")
+                append("\n")
+                append("-----------\n")
+                append("\n")
+            }
+            append(cert.toString(charset))
+        })
         setupContentWarningField(composeOptions?.contentWarning)
         setupPollView()
         applyShareIntent(intent, savedInstanceState)
@@ -1268,7 +1349,7 @@ class ComposeActivity :
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
+        if (item.itemId == id.home) {
             handleCloseButton()
             return true
         }
