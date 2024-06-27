@@ -15,7 +15,6 @@
 
 package com.keylesspalace.tusky
 
-import com.google.android.material.R as materialR
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationManager
@@ -59,6 +58,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.FixedSizeDrawable
 import com.bumptech.glide.request.transition.Transition
+import com.google.android.material.R as materialR
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -147,7 +147,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 @OptionalInject
 @AndroidEntryPoint

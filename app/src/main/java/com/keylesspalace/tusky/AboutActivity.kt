@@ -22,7 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
-
 @AndroidEntryPoint
 class AboutActivity : BottomSheetActivity() {
     @Inject
@@ -59,16 +58,13 @@ class AboutActivity : BottomSheetActivity() {
                     R.string.about_account_info,
                     account.username,
                     account.domain,
-                    instanceInfo.version+"_Crypty_edition"
+                    instanceInfo.version
                 )
 
                 binding.accountInfoTitle.show()
                 binding.accountInfo.show()
             }
         }
-
-
-
         if (BuildConfig.CUSTOM_INSTANCE.isBlank()) {
             binding.aboutPoweredByTusky.hide()
         }
