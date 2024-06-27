@@ -8,8 +8,7 @@ Crypty is a Tusky fork for supporting encrypted DMs. (WIP)
 
 [<img src="/assets/fdroid_badge.png" alt="Get it on F-Droid" height="80" />](https://f-droid.org/repository/browse/?fdid=com.keylesspalace.tusky)
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="Get it on Google Play" height="80" />](https://play.google.com/store/apps/details?id=com.keylesspalace.tusky&utm_source=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
-Crypty is a Tusky fork for supporting encrypted DMs. (WIP)
-- Multi-Account support
+- Multi-Account support (the encryption added by Crypty also works for multiple accounts)
 - Dark, light and black themes with the possibility to auto-switch based on the time of day
 - Drafts - compose posts and save them for later
 - Choose between different emoji styles
