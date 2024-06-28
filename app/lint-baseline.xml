@@ -8,7 +8,7 @@
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/keylesspalace/tusky/components/compose/ComposeActivity.kt"
-            line="1475"
+            line="1529"
             column="28"/>
     </issue>
 
@@ -939,6 +939,28 @@
             file="src/main/java/com/keylesspalace/tusky/TabPreferenceActivity.kt"
             line="238"
             column="26"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;🔓&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;🔓&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_compose.xml"
+            line="69"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;🔒&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;🔒&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_compose.xml"
+            line="82"
+            column="13"/>
     </issue>
 
     <issue

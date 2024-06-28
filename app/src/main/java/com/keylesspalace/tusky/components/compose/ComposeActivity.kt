@@ -939,7 +939,6 @@ class ComposeActivity :
                 }
             )
         }
-
     }
 
     private fun unlockComposeText() {
@@ -956,18 +955,18 @@ class ComposeActivity :
         var privKey: ByteArray = "".toByteArray()
         if (contentText.split("\n").first() == "-----BEGIN PGP MESSAGE-----" ||
             contentText.split("\n").elementAt(1) == "-----BEGIN PGP MESSAGE-----" ||
-            contentText.split("\n").elementAt(2) == "-----BEGIN PGP MESSAGE-----" ){
-
-            Log.d("condition_block","Encrypted message considered well enough formed.")
+            contentText.split("\n").elementAt(2) == "-----BEGIN PGP MESSAGE-----"
+        ) {
+            Log.d("condition_block", "Encrypted message considered well enough formed.")
 
             // Try to bring into proper format for decryption
-            if(contentText.split("\n").elementAt(1) == "-----BEGIN PGP MESSAGE-----"){
-                contentText=contentText.split("\n").subList(1,contentText.split("\n").size).joinToString().split(",").joinToString("\n")
-                Log.d("new contentText",contentText)
+            if (contentText.split("\n").elementAt(1) == "-----BEGIN PGP MESSAGE-----") {
+                contentText = contentText.split("\n").subList(1, contentText.split("\n").size).joinToString().split(",").joinToString("\n")
+                Log.d("new contentText", contentText)
             } else {
-                if (contentText.split("\n").elementAt(2) == "-----BEGIN PGP MESSAGE-----" ){
-                    contentText=contentText.split("\n").subList(2,contentText.split("\n").size).joinToString().split(",").joinToString("\n")
-                    Log.d("new contentText",contentText)
+                if (contentText.split("\n").elementAt(2) == "-----BEGIN PGP MESSAGE-----") {
+                    contentText = contentText.split("\n").subList(2, contentText.split("\n").size).joinToString().split(",").joinToString("\n")
+                    Log.d("new contentText", contentText)
                 }
             }
 
@@ -992,7 +991,6 @@ class ComposeActivity :
                 .toByteArrayAndResult()
             val decrypted = messageAndVerifications.bytes
             binding.composeEditField.setText(decrypted.toString(charset))
-
         } else {
             binding.composeEditField.setText(
                 buildString {
@@ -1001,7 +999,6 @@ class ComposeActivity :
                 }
             )
         }
-
     }
 
     private fun toggleHideMedia() {
@@ -1258,22 +1255,19 @@ class ComposeActivity :
 
             binding.lockButton.hide()
             binding.unlockButton.hide()
-
         } else {
             if (visibility.toString() == "UNLISTED") {
                 Log.i("if block by visibility", visibility.toString())
 
                 binding.lockButton.hide()
                 binding.unlockButton.hide()
-
-                } else {
+            } else {
                 if (visibility.toString() == "PRIVATE") {
                     Log.i("if block by visibility", visibility.toString())
 
                     binding.lockButton.hide()
                     binding.unlockButton.hide()
-
-                    } else {
+                } else {
                     if (visibility.toString() == "DIRECT") {
                         Log.i("if block by visibility", visibility.toString())
 
