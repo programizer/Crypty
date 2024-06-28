@@ -59,6 +59,32 @@
             android:textSize="?attr/status_text_large"
             android:textStyle="bold" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/unlockButton"
+            style="@style/TuskyImageButton"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:padding="8dp"
+            android:text="🔓"
+            android:textColor="?android:textColorTertiary"
+            android:textSize="?attr/status_text_large"
+            android:textStyle="bold"
+            android:visibility="invisible" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/lockButton"
+            style="@style/TuskyImageButton"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:padding="8dp"
+            android:text="🔒"
+            android:textColor="?android:textColorTertiary"
+            android:textSize="?attr/status_text_large"
+            android:textStyle="bold"
+            android:visibility="invisible" />
+
         <ImageButton
             android:id="@+id/descriptionMissingWarningButton"
             style="@style/TuskyImageButton"
